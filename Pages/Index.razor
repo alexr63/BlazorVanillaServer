@@ -1,0 +1,89 @@
+@page "/"
+@using System.Text
+
+<h1>Startrek</h1>
+
+<div style="font-weight: bold;">
+    quadrant&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3/1<br />
+    .&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;condition&nbsp;&nbsp;GREEN<br />
+    .&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.<br />
+    .&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.<br />
+    .&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.<br />
+    .&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;*&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;torpedoes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;10<br />
+    *&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;energy&nbsp;&nbsp;&nbsp;&nbsp;<snap class="invert">@($"{_energy:0000}")</snap><br />
+    .&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;shields&nbsp;&nbsp;&nbsp;&nbsp;<snap class="invert">@($"{_shieldLevel:0000}")</snap><br />
+    .&nbsp;&nbsp;.&nbsp;-E-&nbsp;.&nbsp;&nbsp;*&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;klingons&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;17<br />
+</div>
+
+<div style="font-weight: bold;">
+    @((MarkupString)_quadrant)
+</div>
+
+@code {
+    private int _energy = 1815;
+    private int _shieldLevel = 1000;
+
+    private string _quadrant;
+
+    protected override Task OnInitializedAsync()
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 7; j++)
+            {
+                Quadrant[i, j] = new Empty();
+            }
+        }
+
+        Quadrant[7, 2] = new Enterprise();
+        Quadrant[5, 0] = new Star();
+        Quadrant[7, 4] = new Star();
+        Quadrant[4, 5] = new Star();
+        Quadrant[5, 6] = new Star();
+
+        _quadrant = DisplayQuadrant();
+        
+        return base.OnInitializedAsync();
+    }
+
+    public class Empty
+    {
+        public override string ToString()
+        {
+            return "&nbsp;.&nbsp;";
+        }
+    }
+
+    public class Star : Empty
+    {
+        public override string ToString()
+        {
+            return "&nbsp;*&nbsp;";
+        }
+    }
+
+    public class Enterprise : Empty
+    {
+        public override string ToString()
+        {
+            return "-E-";
+        }
+    }
+
+    public Empty[,] Quadrant = new Empty[8, 7];
+
+    private string DisplayQuadrant()
+    {
+        var sb = new StringBuilder();
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 7; j++)
+            {
+                sb.Append(Quadrant[i, j]);
+            }
+            sb.AppendLine("<br />");
+        }
+
+        return sb.ToString();
+    }
+}
