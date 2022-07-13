@@ -3,28 +3,72 @@
 
 <h1>Startrek</h1>
 
-<div style="font-weight: bold;">
-    quadrant&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3/1<br />
-    .&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;condition&nbsp;&nbsp;GREEN<br />
-    .&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.<br />
-    .&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.<br />
-    .&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.<br />
-    .&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;*&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;torpedoes&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;10<br />
-    *&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;energy&nbsp;&nbsp;&nbsp;&nbsp;<snap class="invert">@($"{_energy:0000}")</snap><br />
-    .&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;shields&nbsp;&nbsp;&nbsp;&nbsp;<snap class="invert">@($"{_shieldLevel:0000}")</snap><br />
-    .&nbsp;&nbsp;.&nbsp;-E-&nbsp;.&nbsp;&nbsp;*&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;klingons&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;17<br />
-</div>
+<table style="font-weight: bold;">
+    <tr>
+        <td>
+            quadrant @_quadrant.Title
+        </td>
+        <td>
 
-<div style="font-weight: bold;">
-    quadrant @_quadrant.Title
-</div>
-<div style="font-weight: bold;">
-    @((MarkupString)_quadrant.ToString())
-</div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            @((MarkupString)_quadrant.ToString())
+        </td>
+        <td style="vertical-align: top;">
+            <table width="200" style="margin-left: 50px;">
+                <tr>
+                    <td>
+                        condition
+                    </td>
+                    <td style="text-align: right;">
+                        @_condition
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        torpedoes
+                    </td>
+                    <td style="text-align: right;">
+                        @_torpedoes
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        energy
+                    </td>
+                    <td style="text-align: right;">
+                        @($"{_energy:0000}")
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        shields
+                    </td>
+                    <td style="text-align: right;">
+                        @($"{_shieldLevel:0000}")
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        klingons
+                    </td>
+                    <td style="text-align: right;">
+                        @_klingons
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
 
 @code {
+    private string _condition = "GREEN";
+    private int _torpedoes = 10;
     private int _energy = 1815;
     private int _shieldLevel = 1000;
+    private int _klingons = 17;
 
     private Quadrant _quadrant;
 
