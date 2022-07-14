@@ -15,8 +15,8 @@ namespace BlazorVanillaServer.Pages
 
         private Quadrant _quadrant;
 
-        const int ExpectedWidth = 8;
-        const int ExpectedHeight = 7;
+        const int ExpectedWidth = 7;
+        const int ExpectedHeight = 8;
 
         private QuadrantMap _map;
 
@@ -26,12 +26,12 @@ namespace BlazorVanillaServer.Pages
             _map.Clear(true, true);
 
             _map.Add(new Star(5, 0));
-            _map.Add(new Star(7, 4));
+            _map.Add(new Star(6, 4));
             _map.Add(new Star(4, 5));
             _map.Add(new Star(5, 6));
 
             var pathFinder = new PathFinder(_map, 1.41);
-            var source = _map.GetCell(7, 2);
+            var source = _map.GetCell(6, 2);
             var destination = _map.GetCell(3, 4);
             Path shortestPath = pathFinder.ShortestPath(source, destination);
             
@@ -45,7 +45,7 @@ namespace BlazorVanillaServer.Pages
                 }
             }
 
-            _quadrant.Cells[7, 2] = new Enterprise();
+            _quadrant.Cells[7, 2] = new Enterprise2();
             _quadrant.Cells[5, 0] = new Star2();
             _quadrant.Cells[7, 4] = new Star2();
             _quadrant.Cells[4, 5] = new Star2();
@@ -53,6 +53,12 @@ namespace BlazorVanillaServer.Pages
 
             return base.OnInitializedAsync();
         }
+
+        public string MapDisplay =>
+            _map.ToString()
+                .Replace(".", "&nbsp;.&nbsp;")
+                .Replace("*", "&nbsp;*&nbsp;")
+                .Replace("E", "-E-");
 
         public class Empty
         {
@@ -70,7 +76,7 @@ namespace BlazorVanillaServer.Pages
             }
         }
 
-        public class Enterprise : Empty
+        public class Enterprise2 : Empty
         {
             public override string ToString()
             {

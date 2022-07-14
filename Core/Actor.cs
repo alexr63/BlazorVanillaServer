@@ -5,7 +5,7 @@ using RogueSharp;
 
 namespace BlazorVanillaServer.Core
 {
-    public class Actor : IActor, Interfaces.IDrawable, IScheduleable
+    public class Actor : IActor, IDrawable, IScheduleable
     {
         private string _name;
         private int _speed;
