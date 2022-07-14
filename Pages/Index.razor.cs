@@ -27,16 +27,18 @@ namespace BlazorVanillaServer.Pages
 
         private QuadrantMap _map;
 
-        private Cell _destination;
-
         protected override Task OnInitializedAsync()
         {
             _map = new QuadrantMap(ExpectedWidth, ExpectedHeight);
             _map.Clear(true, true);
 
+            _map.Add(new Star(2, 1));
+            _map.Add(new Star(3, 5));
+            _map.Add(new Star(3, 7));
+            _map.Add(new Star(4, 5));
             _map.Add(new Star(5, 0));
             _map.Add(new Star(6, 4));
-            _map.Add(new Star(4, 5));
+            
             _map.Add(new Star(5, 6));
 
             _quadrant = new Quadrant("3/1");
@@ -56,14 +58,14 @@ namespace BlazorVanillaServer.Pages
             _quadrant.Cells[5, 6] = new Star2();
 
             _timer = new Timer();
-            _timer.Interval = 1000 * 1;
+            _timer.Interval = 1000 * 10;
             _timer.Elapsed += TimerElapsed;
             _timer.AutoReset = true;
             _timer.Enabled = true;
 
             var cells = _map.GetAllCells();
             var index = _random.Next(0, cells.Count());
-            _destination = (Cell)cells.Skip(index).First();
+            _map.Destination = (Cell)cells.Skip(index).First();
 
             return base.OnInitializedAsync();
         }
@@ -85,14 +87,14 @@ namespace BlazorVanillaServer.Pages
                 Path path = null;
                 try
                 {
-                    path = pathFinder.ShortestPath(source, _destination);
+                    path = pathFinder.ShortestPath(source, _map.Destination);
                     _map.SetEnterprisePosition(path.StepForward());
                 }
                 catch
                 {
                     var cells = _map.GetAllCells();
                     var index = _random.Next(0, cells.Count());
-                    _destination = (Cell)cells.Skip(index).First();
+                    _map.Destination = (Cell)cells.Skip(index).First();
                 }
 
                 this.InvokeAsync(() => this.StateHasChanged());
@@ -110,6 +112,7 @@ namespace BlazorVanillaServer.Pages
             _map.ToString()
                 .Replace(".", "&nbsp;.&nbsp;")
                 .Replace("*", "&nbsp;*&nbsp;")
+                .Replace("+", "&nbsp;+&nbsp;")
                 .Replace("E", "-E-");
 
         public class Empty

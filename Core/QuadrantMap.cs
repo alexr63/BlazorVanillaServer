@@ -7,6 +7,7 @@ namespace BlazorVanillaServer.Core;
 
 public class QuadrantMap : Map
 {
+    public Cell Destination;
     private readonly Enterprise _enterprise;
     private readonly List<Star> _stars;
 
@@ -36,6 +37,10 @@ public class QuadrantMap : Map
             else if (_enterprise.X == allCell.X && _enterprise.Y == allCell.Y)
             {
                 stringBuilder.Append(_enterprise.ToString());
+            }
+            else if (Destination.X == allCell.X && Destination.Y == allCell.Y)
+            {
+                stringBuilder.Append("+");
             }
             else
             {
