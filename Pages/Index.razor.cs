@@ -29,7 +29,7 @@ namespace BlazorVanillaServer.Pages
             _map.Add(new Star(7, 4));
             _map.Add(new Star(4, 5));
             _map.Add(new Star(5, 6));
-            
+
             var pathFinder = new PathFinder(_map, 1.41);
             var source = _map.GetCell(7, 2);
             var destination = _map.GetCell(3, 4);

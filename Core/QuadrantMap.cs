@@ -7,10 +7,12 @@ namespace BlazorVanillaServer.Core;
 
 public class QuadrantMap : Map
 {
+    private Enterprise _enterprise;
     private readonly List<Star> _stars;
 
     public QuadrantMap(int width, int height) : base(width, height)
     {
+        _enterprise = new Enterprise(1, 1);
         _stars = new List<Star>();
     }
 
@@ -31,6 +33,10 @@ public class QuadrantMap : Map
             {
                 stringBuilder.Append(star.ToString());
             }
+            else if (_enterprise.X == allCell.X && _enterprise.Y == allCell.Y)
+            {
+                stringBuilder.Append(_enterprise.ToString());
+            }
             else
             {
                 stringBuilder.Append(allCell.ToString());
@@ -44,7 +50,7 @@ public class QuadrantMap : Map
         _stars.Add(star);
         SetIsWalkable(star.X, star.Y, false);
     }
-
+    
     public void SetIsWalkable(int x, int y, bool isWalkable)
     {
         ICell cell = GetCell(x, y);
