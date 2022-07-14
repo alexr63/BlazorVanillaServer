@@ -51,6 +51,19 @@ public class QuadrantMap : Map
         SetIsWalkable(star.X, star.Y, false);
     }
 
+    public ICell EnterpriseCell => GetCell(_enterprise.X, _enterprise.Y);
+
+    public bool SetEnterprisePosition(ICell cell)
+    {
+        if (cell.IsWalkable)
+        {
+            _enterprise.X = cell.X;
+            _enterprise.Y = cell.Y;
+            return true;
+        }
+        return false;
+    }
+
     public bool SetActorPosition(Actor actor, int x, int y)
     {
         if (GetCell(x, y).IsWalkable)

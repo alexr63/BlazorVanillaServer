@@ -1,12 +1,19 @@
-﻿using System.Text;
+﻿using System;
+using System.Linq;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using BlazorVanillaServer.Core;
 using RogueSharp;
+using Timer = System.Timers.Timer;
 
 namespace BlazorVanillaServer.Pages
 {
     public partial class Index
     {
+        private Timer _timer;
+        private Random _random = new Random();
+
         private string _condition = "GREEN";
         private int _torpedoes = 10;
         private int _energy = 1815;
@@ -20,6 +27,8 @@ namespace BlazorVanillaServer.Pages
 
         private QuadrantMap _map;
 
+        private Cell _destination;
+
         protected override Task OnInitializedAsync()
         {
             _map = new QuadrantMap(ExpectedWidth, ExpectedHeight);
@@ -30,11 +39,6 @@ namespace BlazorVanillaServer.Pages
             _map.Add(new Star(4, 5));
             _map.Add(new Star(5, 6));
 
-            var pathFinder = new PathFinder(_map, 1.41);
-            var source = _map.GetCell(6, 2);
-            var destination = _map.GetCell(3, 4);
-            Path shortestPath = pathFinder.ShortestPath(source, destination);
-            
             _quadrant = new Quadrant("3/1");
 
             for (int i = 0; i < 8; i++)
@@ -51,7 +55,61 @@ namespace BlazorVanillaServer.Pages
             _quadrant.Cells[4, 5] = new Star2();
             _quadrant.Cells[5, 6] = new Star2();
 
+            _timer = new Timer();
+            _timer.Interval = 1000 * 10;
+            _timer.Elapsed += TimerElapsed;
+            _timer.AutoReset = true;
+            _timer.Enabled = true;
+
+            var cells = _map.GetAllCells();
+            var index = _random.Next(0, cells.Count());
+            _destination = (Cell)cells.Skip(index).First();
+
             return base.OnInitializedAsync();
+        }
+
+        private void TimerElapsed(Object source, System.Timers.ElapsedEventArgs e)
+        {
+            Update();
+            Draw();
+        }
+
+        private void Update()
+        {
+            if (_energy > 100)
+            {
+                _energy -= _random.Next(-10, 10);
+
+                var pathFinder = new PathFinder(_map, 1.41);
+                var source = _map.EnterpriseCell;
+                Path path = null;
+                try
+                {
+                    path = pathFinder.ShortestPath(source, _destination);
+                }
+                catch (NoMoreStepsException)
+                {
+                }
+                if (path != null)
+                {
+                    try
+                    {
+                        _map.SetEnterprisePosition(path.StepForward());
+                    }
+                    catch (NoMoreStepsException)
+                    {
+                    }
+                }
+
+                this.InvokeAsync(() => this.StateHasChanged());
+                Thread.Sleep(2000);
+            }
+        }
+
+        private void Draw()
+        {
+            //this.StateHasChanged();
+            this.InvokeAsync(() => this.StateHasChanged());
         }
 
         public string MapDisplay =>
