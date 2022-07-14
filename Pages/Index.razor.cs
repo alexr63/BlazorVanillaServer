@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Threading.Tasks;
+using RogueSharp;
 
 namespace BlazorVanillaServer.Pages
 {
@@ -13,8 +14,26 @@ namespace BlazorVanillaServer.Pages
 
         private Quadrant _quadrant;
 
+        const int ExpectedWidth = 8;
+        const int ExpectedHeight = 7;
+
+        private Map _map;
+
         protected override Task OnInitializedAsync()
         {
+            _map = new MyMap(ExpectedWidth, ExpectedHeight);
+            _map.Clear(true, true);
+            _map.SetCellProperties(5, 0, true, false);
+            _map.SetCellProperties(7, 4, true, false);
+            _map.SetCellProperties(4, 5, true, false);
+            _map.SetCellProperties(5, 6, true, false);
+            var q = _map.ToString();
+
+            var pathFinder = new PathFinder(_map, 1.41);
+            var source = _map.GetCell(7, 2);
+            var destination = _map.GetCell(3, 4);
+            Path shortestPath = pathFinder.ShortestPath(source, destination);
+            
             _quadrant = new Quadrant("3/1");
 
             for (int i = 0; i < 8; i++)
@@ -34,6 +53,29 @@ namespace BlazorVanillaServer.Pages
             return base.OnInitializedAsync();
         }
 
+        public class MyMap : Map
+        {
+            public MyMap(int width, int height) : base(width, height)
+            {
+            }
+
+            public override string ToString()
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+                int num = 0;
+                foreach (Cell allCell in this.GetAllCells())
+                {
+                    if (allCell.Y != num)
+                    {
+                        num = allCell.Y;
+                        stringBuilder.Append("<br />");
+                    }
+                    stringBuilder.Append(allCell.ToString());
+                }
+                return stringBuilder.ToString().TrimEnd('\r', '\n');
+            }
+        }
+        
         public class Empty
         {
             public override string ToString()
