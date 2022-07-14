@@ -9,9 +9,11 @@ namespace BlazorVanillaServer.Core
     {
         private string _name;
         private int _speed;
-        
-        public Actor()
+
+        public Actor(string name, int speed)
         {
+            _name = name;
+            _speed = speed;
         }
 
         // IActor
