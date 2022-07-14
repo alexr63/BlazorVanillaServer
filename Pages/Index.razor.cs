@@ -56,7 +56,7 @@ namespace BlazorVanillaServer.Pages
             _quadrant.Cells[5, 6] = new Star2();
 
             _timer = new Timer();
-            _timer.Interval = 1000 * 10;
+            _timer.Interval = 1000 * 1;
             _timer.Elapsed += TimerElapsed;
             _timer.AutoReset = true;
             _timer.Enabled = true;
@@ -86,19 +86,13 @@ namespace BlazorVanillaServer.Pages
                 try
                 {
                     path = pathFinder.ShortestPath(source, _destination);
+                    _map.SetEnterprisePosition(path.StepForward());
                 }
-                catch (NoMoreStepsException)
+                catch
                 {
-                }
-                if (path != null)
-                {
-                    try
-                    {
-                        _map.SetEnterprisePosition(path.StepForward());
-                    }
-                    catch (NoMoreStepsException)
-                    {
-                    }
+                    var cells = _map.GetAllCells();
+                    var index = _random.Next(0, cells.Count());
+                    _destination = (Cell)cells.Skip(index).First();
                 }
 
                 this.InvokeAsync(() => this.StateHasChanged());
