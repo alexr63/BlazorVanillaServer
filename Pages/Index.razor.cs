@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Threading.Tasks;
+using BlazorVanillaServer.Core;
 using RogueSharp;
 
 namespace BlazorVanillaServer.Pages
@@ -17,16 +18,19 @@ namespace BlazorVanillaServer.Pages
         const int ExpectedWidth = 8;
         const int ExpectedHeight = 7;
 
-        private Map _map;
+        private QuadrantMap _map;
 
         protected override Task OnInitializedAsync()
         {
-            _map = new MyMap(ExpectedWidth, ExpectedHeight);
+            _map = new QuadrantMap(ExpectedWidth, ExpectedHeight);
             _map.Clear(true, true);
-            _map.SetCellProperties(5, 0, true, false);
-            _map.SetCellProperties(7, 4, true, false);
-            _map.SetCellProperties(4, 5, true, false);
-            _map.SetCellProperties(5, 6, true, false);
+
+            _map.Add(new Star(5, 0));
+            
+            _map.SetCellProperties(5, 0, false, false);
+            _map.SetCellProperties(7, 4, false, false);
+            _map.SetCellProperties(4, 5, false, false);
+            _map.SetCellProperties(5, 6, false, false);
             var q = _map.ToString();
 
             var pathFinder = new PathFinder(_map, 1.41);
@@ -45,37 +49,14 @@ namespace BlazorVanillaServer.Pages
             }
 
             _quadrant.Cells[7, 2] = new Enterprise();
-            _quadrant.Cells[5, 0] = new Star();
-            _quadrant.Cells[7, 4] = new Star();
-            _quadrant.Cells[4, 5] = new Star();
-            _quadrant.Cells[5, 6] = new Star();
+            _quadrant.Cells[5, 0] = new Star2();
+            _quadrant.Cells[7, 4] = new Star2();
+            _quadrant.Cells[4, 5] = new Star2();
+            _quadrant.Cells[5, 6] = new Star2();
 
             return base.OnInitializedAsync();
         }
 
-        public class MyMap : Map
-        {
-            public MyMap(int width, int height) : base(width, height)
-            {
-            }
-
-            public override string ToString()
-            {
-                StringBuilder stringBuilder = new StringBuilder();
-                int num = 0;
-                foreach (Cell allCell in this.GetAllCells())
-                {
-                    if (allCell.Y != num)
-                    {
-                        num = allCell.Y;
-                        stringBuilder.Append("<br />");
-                    }
-                    stringBuilder.Append(allCell.ToString());
-                }
-                return stringBuilder.ToString().TrimEnd('\r', '\n');
-            }
-        }
-        
         public class Empty
         {
             public override string ToString()
@@ -84,7 +65,7 @@ namespace BlazorVanillaServer.Pages
             }
         }
 
-        public class Star : Empty
+        public class Star2 : Empty
         {
             public override string ToString()
             {
