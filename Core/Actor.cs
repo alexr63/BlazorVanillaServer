@@ -5,15 +5,12 @@ using RogueSharp;
 
 namespace BlazorVanillaServer.Core
 {
-    public class Actor : IActor, IDrawable, IScheduleable
+    public class Actor : IActor, IDrawable
     {
-        private string _name;
-        private int _speed;
-
         public Actor(string name, int speed)
         {
-            _name = name;
-            _speed = speed;
+            Name = name;
+            Speed = speed;
         }
 
         // IActor
@@ -23,37 +20,8 @@ namespace BlazorVanillaServer.Core
         public int X { get; set; }
         public int Y { get; set; }
         
-        // IScheduleable
-        public int Time
-        {
-            get
-            {
-                return Speed;
-            }
-        }
+        public string Name { get; set; }
 
-        public string Name
-        {
-            get
-            {
-                return _name;
-            }
-            set
-            {
-                _name = value;
-            }
-        }
-
-        public int Speed
-        {
-            get
-            {
-                return _speed;
-            }
-            set
-            {
-                _speed = value;
-            }
-        }
+        public int Speed { get; set; }
     }
 }

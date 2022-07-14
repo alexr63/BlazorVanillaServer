@@ -40,7 +40,7 @@ public class QuadrantMap : Map
             }
             else if (Destination.X == allCell.X && Destination.Y == allCell.Y)
             {
-                stringBuilder.Append("+");
+                stringBuilder.Append("!");
             }
             else
             {

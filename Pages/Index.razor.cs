@@ -20,8 +20,6 @@ namespace BlazorVanillaServer.Pages
         private int _shieldLevel = 1000;
         private int _klingons = 17;
 
-        private Quadrant _quadrant;
-
         const int ExpectedWidth = 7;
         const int ExpectedHeight = 8;
 
@@ -32,6 +30,7 @@ namespace BlazorVanillaServer.Pages
             _map = new QuadrantMap(ExpectedWidth, ExpectedHeight);
             _map.Clear(true, true);
 
+            _map.Add(new Star(1, 6));
             _map.Add(new Star(2, 1));
             _map.Add(new Star(3, 5));
             _map.Add(new Star(3, 7));
@@ -41,30 +40,14 @@ namespace BlazorVanillaServer.Pages
             
             _map.Add(new Star(5, 6));
 
-            _quadrant = new Quadrant("3/1");
-
-            for (int i = 0; i < 8; i++)
-            {
-                for (int j = 0; j < 7; j++)
-                {
-                    _quadrant.Cells[i, j] = new Empty();
-                }
-            }
-
-            _quadrant.Cells[7, 2] = new Enterprise2();
-            _quadrant.Cells[5, 0] = new Star2();
-            _quadrant.Cells[7, 4] = new Star2();
-            _quadrant.Cells[4, 5] = new Star2();
-            _quadrant.Cells[5, 6] = new Star2();
-
             _timer = new Timer();
             _timer.Interval = 1000 * 10;
             _timer.Elapsed += TimerElapsed;
             _timer.AutoReset = true;
             _timer.Enabled = true;
 
-            var cells = _map.GetAllCells();
-            var index = _random.Next(0, cells.Count());
+            var cells = _map.GetAllCells().ToList();
+            var index = _random.Next(0, cells.Count);
             _map.Destination = (Cell)cells.Skip(index).First();
 
             return base.OnInitializedAsync();
@@ -84,16 +67,15 @@ namespace BlazorVanillaServer.Pages
 
                 var pathFinder = new PathFinder(_map, 1.41);
                 var source = _map.EnterpriseCell;
-                Path path = null;
                 try
                 {
-                    path = pathFinder.ShortestPath(source, _map.Destination);
+                    var path = pathFinder.ShortestPath(source, _map.Destination);
                     _map.SetEnterprisePosition(path.StepForward());
                 }
                 catch
                 {
-                    var cells = _map.GetAllCells();
-                    var index = _random.Next(0, cells.Count());
+                    var cells = _map.GetAllCells().ToList();
+                    var index = _random.Next(0, cells.Count);
                     _map.Destination = (Cell)cells.Skip(index).First();
                 }
 
@@ -112,57 +94,7 @@ namespace BlazorVanillaServer.Pages
             _map.ToString()
                 .Replace(".", "&nbsp;.&nbsp;")
                 .Replace("*", "&nbsp;*&nbsp;")
-                .Replace("+", "&nbsp;+&nbsp;")
+                .Replace("!", ">!<")
                 .Replace("E", "-E-");
-
-        public class Empty
-        {
-            public override string ToString()
-            {
-                return "&nbsp;.&nbsp;";
-            }
-        }
-
-        public class Star2 : Empty
-        {
-            public override string ToString()
-            {
-                return "&nbsp;*&nbsp;";
-            }
-        }
-
-        public class Enterprise2 : Empty
-        {
-            public override string ToString()
-            {
-                return "-E-";
-            }
-        }
-
-        public class Quadrant
-        {
-            public string Title { get; set; }
-            public Empty[,] Cells = new Empty[8, 7];
-
-            public Quadrant(string title)
-            {
-                Title = title;
-            }
-
-            public override string ToString()
-            {
-                var sb = new StringBuilder();
-                for (int i = 0; i < 8; i++)
-                {
-                    for (int j = 0; j < 7; j++)
-                    {
-                        sb.Append(Cells[i, j]);
-                    }
-                    sb.AppendLine("<br />");
-                }
-
-                return sb.ToString();
-            }
-        }
     }
 }
