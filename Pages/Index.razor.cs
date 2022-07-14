@@ -26,13 +26,10 @@ namespace BlazorVanillaServer.Pages
             _map.Clear(true, true);
 
             _map.Add(new Star(5, 0));
+            _map.Add(new Star(7, 4));
+            _map.Add(new Star(4, 5));
+            _map.Add(new Star(5, 6));
             
-            _map.SetCellProperties(5, 0, false, false);
-            _map.SetCellProperties(7, 4, false, false);
-            _map.SetCellProperties(4, 5, false, false);
-            _map.SetCellProperties(5, 6, false, false);
-            var q = _map.ToString();
-
             var pathFinder = new PathFinder(_map, 1.41);
             var source = _map.GetCell(7, 2);
             var destination = _map.GetCell(3, 4);

@@ -10,7 +10,7 @@ namespace BlazorVanillaServer.Core
         public Star(int x, int y)
         {
             X = x;
-            Y = Y;
+            Y = y;
             Symbol = '*';
         }
 
