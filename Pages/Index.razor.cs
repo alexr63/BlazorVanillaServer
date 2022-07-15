@@ -30,6 +30,7 @@ namespace BlazorVanillaServer.Pages
             _map = new QuadrantMap(ExpectedWidth, ExpectedHeight);
             _map.Clear(true, true);
 
+            _map.Add(new Star(0, 2));
             _map.Add(new Star(1, 6));
             _map.Add(new Star(2, 1));
             _map.Add(new Star(3, 5));
