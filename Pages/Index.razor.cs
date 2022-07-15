@@ -64,20 +64,24 @@ namespace BlazorVanillaServer.Pages
         {
             if (_energy > 100)
             {
-                _energy -= _random.Next(-10, 10);
+                
 
                 var pathFinder = new PathFinder(_map, 1.41);
                 var source = _map.EnterpriseCell;
                 try
                 {
                     var path = pathFinder.ShortestPath(source, _map.Destination);
-                    _map.SetEnterprisePosition(path.StepForward());
+                    if (_map.SetEnterprisePosition(path.StepForward()))
+                    {
+                        _energy -= _random.Next(1, 10);
+                    }
                 }
                 catch
                 {
                     var cells = _map.GetAllCells().ToList();
                     var index = _random.Next(0, cells.Count);
                     _map.Destination = (Cell)cells.Skip(index).First();
+                    _energy = 1815;
                 }
 
                 this.InvokeAsync(() => this.StateHasChanged());
