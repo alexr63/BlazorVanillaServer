@@ -1,4 +1,8 @@
-﻿namespace BlazorVanillaServer.Core
+﻿using System;
+using System.Linq;
+using RogueSharp;
+
+namespace BlazorVanillaServer.Core
 {
     public class Game
     {
@@ -7,6 +11,9 @@
         private readonly QuadrantMap _map;
 
         private readonly Enterprise _enterprise;
+        private readonly Starbase _starbase;
+
+        private Random _random = new Random();
 
         public Game()
         {
@@ -24,6 +31,17 @@
             _map.Add(new Star(5, 6));
 
             _enterprise = new Enterprise(2, 7, "Enterprise", 10);
+
+            var cells = _map.GetAllCells().ToList();
+            var index = _random.Next(0, cells.Count);
+            var cell = (Cell)cells.Skip(index).First();
+            _starbase = new Starbase(cell.X, cell.Y, "Starbase", 0);
+        }
+
+        public override string ToString()
+        {
+            var rc = _map.ToString();
+            return rc;
         }
     }
 }

@@ -25,6 +25,8 @@ namespace BlazorVanillaServer.Pages
 
         private QuadrantMap _map;
 
+        private Game _game = new Game();
+
         protected override Task OnInitializedAsync()
         {
             _map = new QuadrantMap(ExpectedWidth, ExpectedHeight);

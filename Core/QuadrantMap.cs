@@ -34,14 +34,6 @@ public class QuadrantMap : Map
             {
                 stringBuilder.Append(star.ToString());
             }
-            else if (_enterprise.X == allCell.X && _enterprise.Y == allCell.Y)
-            {
-                stringBuilder.Append(_enterprise.ToString());
-            }
-            else if (Destination.X == allCell.X && Destination.Y == allCell.Y)
-            {
-                stringBuilder.Append("!");
-            }
             else
             {
                 stringBuilder.Append(allCell.ToString());
