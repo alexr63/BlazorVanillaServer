@@ -20,6 +20,9 @@ namespace BlazorVanillaServer.Pages
         private int _shieldLevel = 1000;
         private int _klingons = 17;
 
+        private int starDate = 76045;
+        private string starDateString;
+
         const int ExpectedWidth = 7;
         const int ExpectedHeight = 8;
 
@@ -27,6 +30,8 @@ namespace BlazorVanillaServer.Pages
 
         protected override Task OnInitializedAsync()
         {
+            starDateString = DecimalToArbitrarySystem(starDate, 20);
+            
             _map = new QuadrantMap(ExpectedWidth, ExpectedHeight);
             _map.Clear(true, true);
 
@@ -62,6 +67,8 @@ namespace BlazorVanillaServer.Pages
 
         private void Update()
         {
+            starDate += 1;
+
             if (_energy > 100)
             {
                 
@@ -91,6 +98,8 @@ namespace BlazorVanillaServer.Pages
 
         private void Draw()
         {
+            starDateString = DecimalToArbitrarySystem(starDate, 20);
+
             //this.StateHasChanged();
             this.InvokeAsync(() => this.StateHasChanged());
         }
@@ -101,5 +110,43 @@ namespace BlazorVanillaServer.Pages
                 .Replace("*", "&nbsp;*&nbsp;")
                 .Replace("!", ">!<")
                 .Replace("E", "-E-");
+
+        /// <summary>
+        /// Converts the given decimal number to the numeral system with the
+        /// specified radix (in the range [2, 36]).
+        /// </summary>
+        /// <param name="decimalNumber">The number to convert.</param>
+        /// <param name="radix">The radix of the destination numeral system (in the range [2, 36]).</param>
+        /// <returns></returns>
+        public static string DecimalToArbitrarySystem(long decimalNumber, int radix)
+        {
+            const int BitsInLong = 64;
+            const string Digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+            if (radix < 2 || radix > Digits.Length)
+                throw new ArgumentException("The radix must be >= 2 and <= " + Digits.Length.ToString());
+
+            if (decimalNumber == 0)
+                return "0";
+
+            int index = BitsInLong - 1;
+            long currentNumber = Math.Abs(decimalNumber);
+            char[] charArray = new char[BitsInLong];
+
+            while (currentNumber != 0)
+            {
+                int remainder = (int)(currentNumber % radix);
+                charArray[index--] = Digits[remainder];
+                currentNumber = currentNumber / radix;
+            }
+
+            string result = new String(charArray, index + 1, BitsInLong - index - 1);
+            if (decimalNumber < 0)
+            {
+                result = "-" + result;
+            }
+
+            return result;
+        }
     }
 }

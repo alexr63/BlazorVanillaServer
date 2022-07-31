@@ -1,7 +1,23 @@
 @page "/"
 @using System.Text
 
-<h1>Startrek</h1>
+<table width="450">
+    <tr>
+        <td>
+            <h1>Star Trek</h1>
+        </td>
+        <td style="text-align: right;">
+            @if (starDateString != null)
+            {
+                @foreach (var e in starDateString)
+                {
+                    var src = $"/images/{e}.png";
+                    <img alt="e" src=@src />
+                }
+            }
+        </td>
+    </tr>
+</table>
 
 <table style="font-weight: bold;">
     <tr>
@@ -9,7 +25,6 @@
             quadrant 3/1
         </td>
         <td>
-
         </td>
     </tr>
     <tr>
