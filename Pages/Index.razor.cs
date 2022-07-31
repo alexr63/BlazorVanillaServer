@@ -30,6 +30,7 @@ namespace BlazorVanillaServer.Pages
 
         protected override Task OnInitializedAsync()
         {
+            starDate = StarDate();
             starDateString = DecimalToArbitrarySystem(starDate, 20);
             
             _map = new QuadrantMap(ExpectedWidth, ExpectedHeight);
@@ -147,6 +148,17 @@ namespace BlazorVanillaServer.Pages
             }
 
             return result;
+        }
+
+        private int StarDate()
+        {
+            var now = DateTime.UtcNow;
+            var then = new DateTime(1987, 7, 15);
+            var stardate = (now - then).TotalMilliseconds;
+            stardate = stardate / (1000 * 60 * 60 * 24 * 0.036525);
+            stardate = Math.Floor(stardate + 410000);
+            stardate = stardate / 10;
+            return (int)stardate;
         }
     }
 }
