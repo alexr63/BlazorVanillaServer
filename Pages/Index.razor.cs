@@ -160,5 +160,10 @@ namespace BlazorVanillaServer.Pages
             stardate = stardate / 10;
             return (int)stardate;
         }
+
+        private void SwitchShields()
+        {
+            _shieldLevel = _shieldLevel == 1000 ? 0 : 1000;
+        }
     }
 }
