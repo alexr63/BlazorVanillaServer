@@ -4,6 +4,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using BlazorVanillaServer.Core;
+using BlazorVanillaServer.Models;
+using BlazorVanillaServer.Services;
+using Microsoft.AspNetCore.Components;
+using Orleans.Streams;
 using RogueSharp;
 using Timer = System.Timers.Timer;
 
@@ -28,7 +32,15 @@ namespace BlazorVanillaServer.Pages
 
         private QuadrantMap _map;
 
-        protected override Task OnInitializedAsync()
+        [Inject]
+        private SectorService SectorService { get; set; }
+        
+        private Guid ownerKey = Guid.Empty;
+        private KlingonKeyedCollection klingons = new();
+        private StreamSubscriptionHandle<KlingonNotification>? subscription;
+        private string map;
+
+        protected override async Task OnInitializedAsync()
         {
             starDate = StarDate();
             starDateString = DecimalToArbitrarySystem(starDate, 20);
@@ -57,7 +69,115 @@ namespace BlazorVanillaServer.Pages
             var index = _random.Next(0, cells.Count);
             _map.Destination = (Cell)cells.Skip(index).First();
 
-            return base.OnInitializedAsync();
+            // subscribe to updates for the current list
+            // note that the blazor task scheduler is reentrant
+            // therefore notifications can and will come
+            // // through when the code is stuck at an await
+            subscription = await SectorService.SubscribeAsync(
+                ownerKey,
+                notification => InvokeAsync(
+                    () => HandleNotificationAsync(notification)));
+
+            // get all items from the cluster
+            foreach (var item in await SectorService.GetAllAsync(ownerKey))
+            {
+                klingons.Add(item);
+            }
+
+            map = await SectorService.GetMapAsync(ownerKey, klingons);
+
+            await base.OnInitializedAsync();
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            try
+            {
+                if (subscription is not null)
+                {
+                    // unsubscribe from the orleans stream - best effort
+                    await subscription.UnsubscribeAsync();
+                }
+            }
+            catch
+            {
+                // noop
+            }
+        }
+
+        private async Task AddKlingonAsync()
+        {
+            var rnd = new Random();
+            // create a new klingon
+            var klingon = new Klingon(Guid.NewGuid(), $"Ogen K'gandlaj {DateTime.UtcNow.Second}",
+                new Location(rnd.Next(0, 7), rnd.Next(0, 8)),
+                new Location(rnd.Next(0, 7), rnd.Next(0, 8)),
+                ownerKey, DateTime.UtcNow);
+
+            // add it to the cluste
+            await SectorService.SetAsync(klingon);
+
+            // the above this will generate a stream notification that may or may not have come through while we were awaiting the call
+            // therefore only add it to the interface if it is not there yet
+            if (klingons.TryGetValue(klingon.Key, out var current))
+            {
+                // latest one wins
+                if (klingon.Timestamp > current.Timestamp)
+                {
+                    klingons[klingons.IndexOf(current)] = klingon;
+                }
+            }
+            else
+            {
+                klingons.Add(klingon);
+            }
+        }
+
+        private async Task HandleNotificationAsync(KlingonNotification notification)
+        {
+            // was the item removed
+            if (notification.Item is null)
+            {
+                // attempt to remove it from the user interface
+                if (klingons.Remove(notification.ItemKey))
+                {
+                    StateHasChanged();
+                }
+                return;
+            }
+
+            if (klingons.TryGetValue(notification.Item.Key, out var current))
+            {
+                // latest one wins
+                if (notification.Item.Timestamp > current.Timestamp)
+                {
+                    klingons[klingons.IndexOf(current)] = notification.Item;
+                    map = await SectorService.GetMapAsync(ownerKey, klingons);
+                    StateHasChanged();
+                }
+                map = await SectorService.GetMapAsync(ownerKey, klingons);
+                StateHasChanged();
+                return;
+            }
+
+            klingons.Add(notification.Item);
+            map = await SectorService.GetMapAsync(ownerKey, klingons);
+            StateHasChanged();
+            return;
+        }
+
+        private void TryUpdateCollection(Klingon item)
+        {
+            // we need to cater for reentrancy allowing a stream notification during the previous await
+            // the notification may have even have deleted the item - if so then deletion wins
+            if (klingons.TryGetValue(item.Key, out var current))
+            {
+                // latest one wins
+                if (item.Timestamp > current.Timestamp)
+                {
+                    klingons[klingons.IndexOf(current)] = item;
+                }
+            }
         }
 
         private void TimerElapsed(Object source, System.Timers.ElapsedEventArgs e)
