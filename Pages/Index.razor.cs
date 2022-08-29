@@ -79,12 +79,15 @@ namespace BlazorVanillaServer.Pages
                     () => HandleNotificationAsync(notification)));
 
             // get all items from the cluster
+            KlingonKeyedCollection klingons2 = new();
             foreach (var item in await SectorService.GetAllAsync(ownerKey))
             {
-                klingons.Add(item);
+                klingons2.Add(item);
             }
 
-            map = await SectorService.GetMapAsync(ownerKey, klingons);
+            map = await SectorService.GetMapAsync(ownerKey, klingons2);
+
+            await AddKlingonAsync();
 
             await base.OnInitializedAsync();
         }
