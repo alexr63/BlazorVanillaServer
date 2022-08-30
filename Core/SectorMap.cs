@@ -12,7 +12,7 @@ namespace BlazorVanillaServer.Core
         {
         }
 
-        public string FormatString(KlingonKeyedCollection klingons)
+        public string FormatString(KlingonKeyedCollection klingons, EnterpriseKeyedCollection enterprises)
         {
             StringBuilder stringBuilder = new StringBuilder();
             int num = 0;
@@ -25,6 +25,7 @@ namespace BlazorVanillaServer.Core
                 }
 
                 var klingon = klingons.SingleOrDefault(e => e.Position.X == cell.X && e.Position.Y == cell.Y);
+                var enterprise = enterprises.SingleOrDefault(e => e.Position.X == cell.X && e.Position.Y == cell.Y);
                 if (!cell.IsWalkable)
                 {
                     stringBuilder.Append("*");
@@ -32,6 +33,10 @@ namespace BlazorVanillaServer.Core
                 else if (klingon != null)
                 {
                     stringBuilder.Append("+");
+                }
+                else if (enterprise != null)
+                {
+                    stringBuilder.Append("E");
                 }
                 else
                 {

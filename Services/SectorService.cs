@@ -22,11 +22,11 @@ public class SectorService
         _client = client;
     }
 
-    public async Task<string> GetMapAsync(Guid ownerKey, KlingonKeyedCollection klingonKeyedCollection)
+    public async Task<string> GetMapAsync(Guid ownerKey, KlingonKeyedCollection klingonKeyedCollection, EnterpriseKeyedCollection enterpriseKeyedCollection)
     {
         var map = await _client.GetGrain<ISectorGrain>(ownerKey)
             .GetMapAsync();
-        return map.FormatString(klingonKeyedCollection);
+        return map.FormatString(klingonKeyedCollection, enterpriseKeyedCollection);
     }
 
     
@@ -76,15 +76,24 @@ public class SectorService
 
     public Task SetAsync(Klingon item) =>
         _client.GetGrain<IKlingonGrain>(item.Key).SetAsync(item);
+   public Task SetAsync(Enterprise item) =>
+        _client.GetGrain<IEnterpriseGrain>(item.Key).SetAsync(item);
 
-    public Task DeleteAsync(Guid itemKey) =>
+    public Task DeleteKlingonAsync(Guid itemKey) =>
+        _client.GetGrain<IKlingonGrain>(itemKey).ClearAsync();
+    public Task DeleteEnterpriseAsync(Guid itemKey) =>
         _client.GetGrain<IKlingonGrain>(itemKey).ClearAsync();
 
-    public Task<StreamSubscriptionHandle<KlingonNotification>> SubscribeAsync(
+    public Task<StreamSubscriptionHandle<KlingonNotification>> SubscribeKlingonAsync(
         Guid ownerKey, Func<KlingonNotification, Task> action) =>
         _client.GetStreamProvider("SMS")
             .GetStream<KlingonNotification>(ownerKey, nameof(IKlingonGrain))
             .SubscribeAsync(new KlingonObserver(_logger, action));
+    public Task<StreamSubscriptionHandle<EnterpriseNotification>> SubscribeEnterpriseAsync(
+        Guid ownerKey, Func<EnterpriseNotification, Task> action) =>
+        _client.GetStreamProvider("SMS")
+            .GetStream<EnterpriseNotification>(ownerKey, nameof(IEnterpriseGrain))
+            .SubscribeAsync(new EnterpriseObserver(_logger, action));
 
     private class KlingonObserver : IAsyncObserver<KlingonNotification>
     {
@@ -109,6 +118,33 @@ public class SectorService
 
         public Task OnNextAsync(
             KlingonNotification item,
+            StreamSequenceToken? token = null) =>
+            _onNext(item);
+    }
+
+    private class EnterpriseObserver : IAsyncObserver<EnterpriseNotification>
+    {
+        private readonly ILogger<SectorService> _logger;
+        private readonly Func<EnterpriseNotification, Task> _onNext;
+
+        public EnterpriseObserver(
+            ILogger<SectorService> logger,
+            Func<EnterpriseNotification, Task> action)
+        {
+            _logger = logger;
+            _onNext = action;
+        }
+
+        public Task OnCompletedAsync() => Task.CompletedTask;
+
+        public Task OnErrorAsync(Exception ex)
+        {
+            _logger.LogError(ex, ex.Message);
+            return Task.CompletedTask;
+        }
+
+        public Task OnNextAsync(
+            EnterpriseNotification item,
             StreamSequenceToken? token = null) =>
             _onNext(item);
     }
