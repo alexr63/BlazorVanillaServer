@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using Orleans.Hosting;
 
 namespace BlazorVanillaServer
 {
@@ -9,13 +8,6 @@ namespace BlazorVanillaServer
         public static void Main(string[] args)
         {
             CreateHostBuilder(args)
-                .UseOrleans(builder =>
-                {
-                    builder.UseLocalhostClustering();
-                    builder.AddMemoryGrainStorageAsDefault();
-                    builder.AddSimpleMessageStreamProvider("SMS");
-                    builder.AddMemoryGrainStorage("PubSubStore");
-                })
                 .Build().Run();
         }
 
