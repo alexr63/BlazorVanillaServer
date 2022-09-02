@@ -82,7 +82,12 @@ namespace BlazorVanillaServer.Pages
                     var path = pathFinder.ShortestPath(source, _map.Destination);
                     if (_map.SetEnterprisePosition(path.StepForward()))
                     {
-                        _energy -= _random.Next(1, 10);
+                        var energySpent = _random.Next(1, 10);
+                        if (_shieldsUp)
+                        {
+                            energySpent *= 10;
+                        }
+                        _energy -= energySpent;
                     }
                 }
                 catch
