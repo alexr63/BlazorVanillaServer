@@ -18,6 +18,7 @@ namespace BlazorVanillaServer.Pages
         private int _torpedoes = 10;
         private int _energy = 1815;
         private int _shieldLevel = 1000;
+        private bool _shieldsUp = false;
         private int _klingons = 17;
 
         private int starDate = 76045;
@@ -163,7 +164,7 @@ namespace BlazorVanillaServer.Pages
 
         private void SwitchShields()
         {
-            _shieldLevel = _shieldLevel == 1000 ? 0 : 1000;
+            _shieldsUp = !_shieldsUp;
         }
     }
 }
