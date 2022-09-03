@@ -59,19 +59,16 @@
                 </tr>
                 <tr>
                     <td>
-                        @if (_shieldsUp)
-                        {
-                            <a href="javascript: void(0);" onclick="@(() => SwitchShields())">shields</a>
-                        }
-                        else
-                        {
-                            <a href="javascript: void(0);" onclick="@(() => SwitchShields())">shields up</a>
-                        }
+                        <a href="javascript: void(0);" onclick="@(() => SwitchShields())">shields</a>
                     </td>
                     <td style="text-align: right;">
                         @if (_shieldsUp)
                         {
                             @($"{_shieldLevel:0000}")
+                        }
+                        else
+                        {
+                            <span>down</span>
                         }
                     </td>
                 </tr>

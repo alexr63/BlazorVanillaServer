@@ -13,7 +13,7 @@ public class QuadrantMap : Map
 
     public QuadrantMap(int width, int height) : base(width, height)
     {
-        _enterprise = new Enterprise(2, 7, "Enterprise", 10);
+        _enterprise = new Enterprise("Enterprise", 2, 7);
         _stars = new List<Star>();
     }
 

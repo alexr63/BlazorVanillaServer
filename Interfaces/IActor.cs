@@ -3,6 +3,7 @@
    public interface IActor
    {
       string Name { get; set; }
-      int Speed { get; set; }
-   }
+      int X { get; set; }
+      int Y { get; set; }
+    }
 }

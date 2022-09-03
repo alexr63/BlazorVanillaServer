@@ -2,10 +2,8 @@ namespace BlazorVanillaServer.Core
 {
     public class Enterprise : Actor
     {
-        public Enterprise(int x, int y, string name, int speed) : base(name, speed)
+        public Enterprise(string name, int x, int y) : base(name, x, y)
         {
-            X = x;
-            Y = y;
             Symbol = 'E';
         }
 
