@@ -69,7 +69,7 @@ namespace BlazorVanillaServer.Pages
 
         private void Update()
         {
-            starDate += 1;
+            starDate = StarDate();
 
             if (_energy > 100)
             {
